@@ -5,7 +5,7 @@ import JSZip from 'jszip';
 import { generatePrivacyPolicy } from '../templates/privacyPolicy';
 import { generateTermsOfService } from '../templates/termsOfService';
 import { generateCookiePolicy } from '../templates/cookiePolicy';
-import { CHECKOUT_URL, PRICE } from '../lib/pro';
+import { CHECKOUT_URL, PRICE, redeemPromoCode } from '../lib/pro';
 
 const TABS = [
   { id: 'privacy', label: 'Privacy Policy', filename: 'privacy-policy.md' },
@@ -13,9 +13,21 @@ const TABS = [
   { id: 'cookie', label: 'Cookie Policy', filename: 'cookie-policy.md' },
 ];
 
-export default function Results({ formData, onBack, isPro }) {
+export default function Results({ formData, onBack, isPro: initialPro }) {
   const [activeTab, setActiveTab] = useState('privacy');
   const [copyState, setCopyState] = useState({});
+  const [promoCode, setPromoCode] = useState('');
+  const [promoError, setPromoError] = useState('');
+  const [isPro, setIsPro] = useState(initialPro);
+
+  function handlePromoRedeem() {
+    if (redeemPromoCode(promoCode)) {
+      setIsPro(true);
+      setPromoError('');
+    } else {
+      setPromoError('Invalid code');
+    }
+  }
 
   const documents = useMemo(() => ({
     privacy: generatePrivacyPolicy(formData, isPro),
@@ -103,25 +115,35 @@ export default function Results({ formData, onBack, isPro }) {
 
         {/* Upgrade banner for free users */}
         {!isPro && (
-          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <svg className="w-5 h-5 text-[#2563eb] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
-              </svg>
-              <div>
-                <p className="text-sm font-semibold text-[#1e3a5f]">Upgrade to Pro for ${PRICE}</p>
-                <p className="text-xs text-gray-500">Remove ShipLegal branding, get AI/LLM clauses, API terms, and zip downloads.</p>
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <svg className="w-5 h-5 text-[#2563eb] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+                </svg>
+                <div>
+                  <p className="text-sm font-semibold text-[#1e3a5f]">Upgrade to Pro</p>
+                  <p className="text-xs text-gray-500">Remove ShipLegal branding, get AI/LLM clauses, API terms, and zip downloads.</p>
+                </div>
+              </div>
+              <div className="flex items-center gap-2 shrink-0">
+                <input
+                  type="text"
+                  value={promoCode}
+                  onChange={e => { setPromoCode(e.target.value); setPromoError(''); }}
+                  onKeyDown={e => e.key === 'Enter' && handlePromoRedeem()}
+                  placeholder="Promo code"
+                  className="w-28 px-3 py-2 text-sm border border-gray-300 rounded-lg outline-none focus:border-[#2563eb] focus:ring-1 focus:ring-blue-200"
+                />
+                <button
+                  onClick={handlePromoRedeem}
+                  className="inline-flex items-center gap-1 bg-[#2563eb] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#1d4ed8] transition-colors cursor-pointer"
+                >
+                  Redeem
+                </button>
               </div>
             </div>
-            <a
-              href={CHECKOUT_URL}
-              className="shrink-0 inline-flex items-center gap-1.5 bg-[#2563eb] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#1d4ed8] transition-colors"
-            >
-              Upgrade
-              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
-              </svg>
-            </a>
+            {promoError && <p className="text-red-500 text-xs mt-2 text-right">{promoError}</p>}
           </div>
         )}
 
