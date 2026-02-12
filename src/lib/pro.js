@@ -31,7 +31,11 @@ export function redeemPromoCode(code) {
   return false;
 }
 
-// Configurable checkout URL — replace with your Stripe/Lemon Squeezy/Gumroad link
-// After payment, the platform redirects to: https://ship-legal.vercel.app/?pro=true
-export const CHECKOUT_URL = '#pricing';
+// Stripe checkout via Vercel serverless function
+// Set STRIPE_SECRET_KEY and STRIPE_PRICE_ID in Vercel env vars to activate
+export const CHECKOUT_URL = '/api/checkout';
+
+// Solana wallet for crypto payment
+export const SOL_WALLET = 'BtErPc3vB64wg2edmXf5byTRCjHBf3ezNFaYsCyEeJZT';
+
 export const PRICE = 29;

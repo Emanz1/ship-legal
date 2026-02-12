@@ -1,4 +1,5 @@
-import { CHECKOUT_URL, PRICE } from '../lib/pro';
+import { useState } from 'react';
+import { CHECKOUT_URL, PRICE, SOL_WALLET } from '../lib/pro';
 
 export default function Hero({ onGetStarted }) {
   return (
@@ -154,6 +155,7 @@ export default function Hero({ onGetStarted }) {
               >
                 Get Pro — ${PRICE}
               </a>
+              <SolPayOption wallet={SOL_WALLET} />
             </div>
           </div>
         </div>
@@ -173,6 +175,45 @@ function FeatureCard({ icon, title, description }) {
       <div className="text-[#2563eb] mb-3">{icon}</div>
       <h3 className="font-semibold text-[#1e3a5f] mb-1">{title}</h3>
       <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
+    </div>
+  );
+}
+
+function SolPayOption({ wallet }) {
+  const [copied, setCopied] = useState(false);
+  const [show, setShow] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(wallet).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    });
+  }
+
+  if (!show) {
+    return (
+      <button
+        onClick={() => setShow(true)}
+        className="block w-full text-center text-xs text-gray-400 hover:text-[#2563eb] mt-3 transition-colors cursor-pointer"
+      >
+        or pay with SOL
+      </button>
+    );
+  }
+
+  return (
+    <div className="mt-3 bg-gray-50 rounded-lg p-3 text-center">
+      <p className="text-xs text-gray-500 mb-2">Send $29 in SOL to:</p>
+      <div className="flex items-center gap-2 bg-white border border-gray-200 rounded-md px-3 py-2">
+        <code className="text-xs text-gray-700 truncate flex-1">{wallet}</code>
+        <button
+          onClick={handleCopy}
+          className="text-xs font-medium text-[#2563eb] hover:text-[#1d4ed8] shrink-0 cursor-pointer"
+        >
+          {copied ? 'Copied!' : 'Copy'}
+        </button>
+      </div>
+      <p className="text-xs text-gray-400 mt-2">After payment, use code <strong className="text-gray-600">LAUNCH</strong> to unlock Pro</p>
     </div>
   );
 }

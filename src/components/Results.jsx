@@ -5,7 +5,7 @@ import JSZip from 'jszip';
 import { generatePrivacyPolicy } from '../templates/privacyPolicy';
 import { generateTermsOfService } from '../templates/termsOfService';
 import { generateCookiePolicy } from '../templates/cookiePolicy';
-import { CHECKOUT_URL, PRICE, redeemPromoCode } from '../lib/pro';
+import { CHECKOUT_URL, PRICE, SOL_WALLET, redeemPromoCode } from '../lib/pro';
 
 const TABS = [
   { id: 'privacy', label: 'Privacy Policy', filename: 'privacy-policy.md' },
@@ -144,6 +144,7 @@ export default function Results({ formData, onBack, isPro: initialPro }) {
               </div>
             </div>
             {promoError && <p className="text-red-500 text-xs mt-2 text-right">{promoError}</p>}
+            <SolPayInline wallet={SOL_WALLET} />
           </div>
         )}
 
@@ -218,6 +219,30 @@ export default function Results({ formData, onBack, isPro: initialPro }) {
           />
         </div>
       </div>
+    </div>
+  );
+}
+
+function SolPayInline({ wallet }) {
+  const [copied, setCopied] = useState(false);
+
+  function handleCopy() {
+    navigator.clipboard.writeText(wallet).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 3000);
+    });
+  }
+
+  return (
+    <div className="flex items-center gap-2 mt-3 pt-3 border-t border-blue-100">
+      <span className="text-xs text-gray-400 shrink-0">Pay with SOL:</span>
+      <code className="text-xs text-gray-500 truncate">{wallet.slice(0, 8)}...{wallet.slice(-4)}</code>
+      <button
+        onClick={handleCopy}
+        className="text-xs font-medium text-[#2563eb] hover:text-[#1d4ed8] shrink-0 cursor-pointer"
+      >
+        {copied ? 'Copied!' : 'Copy Address'}
+      </button>
     </div>
   );
 }
