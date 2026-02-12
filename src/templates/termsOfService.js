@@ -1,6 +1,6 @@
-import { formatDate, getJurisdictionText, LEGAL_DISCLAIMER } from './helpers.js';
+import { formatDate, getJurisdictionText, getDisclaimer } from './helpers.js';
 
-export function generateTermsOfService(data) {
+export function generateTermsOfService(data, isPro = false) {
   const sections = [];
   const date = formatDate(data.effectiveDate);
 
@@ -215,7 +215,7 @@ If you have any questions about these Terms, please contact us at:
 **${data.companyName}**
 Email: ${data.contactEmail}${data.contactAddress ? `\nAddress: ${data.contactAddress.replace(/\n/g, ', ')}` : ''}`);
 
-  sections.push(LEGAL_DISCLAIMER);
+  sections.push(getDisclaimer(isPro));
 
   return sections.join('\n\n');
 }

@@ -1,12 +1,12 @@
-import { formatDate, SERVICE_PRIVACY_LINKS, LEGAL_DISCLAIMER } from './helpers.js';
+import { formatDate, SERVICE_PRIVACY_LINKS, getDisclaimer } from './helpers.js';
 
-export function generateCookiePolicy(data) {
+export function generateCookiePolicy(data, isPro = false) {
   const sections = [];
   const date = formatDate(data.effectiveDate);
 
   // No-cookie declaration
   if (data.cookieUsage === 'No cookies at all') {
-    return generateNoCookieDeclaration(data, date);
+    return generateNoCookieDeclaration(data, date, isPro);
   }
 
   // Header
@@ -134,12 +134,12 @@ If you have any questions about our use of cookies or this Cookie Policy, please
 **${data.companyName}**
 Email: ${data.contactEmail}${data.contactAddress ? `\nAddress: ${data.contactAddress.replace(/\n/g, ', ')}` : ''}`);
 
-  sections.push(LEGAL_DISCLAIMER);
+  sections.push(getDisclaimer(isPro));
 
   return sections.join('\n\n');
 }
 
-function generateNoCookieDeclaration(data, date) {
+function generateNoCookieDeclaration(data, date, isPro) {
   const analyticsServices = data.analyticsServices?.filter(s => s !== 'None') || [];
   let analyticsNote = '';
 
@@ -186,5 +186,5 @@ If you have any questions about our cookie-free approach, please contact us at:
 **${data.companyName}**
 Email: ${data.contactEmail}${data.contactAddress ? `\nAddress: ${data.contactAddress.replace(/\n/g, ', ')}` : ''}
 
-${LEGAL_DISCLAIMER}`;
+${getDisclaimer(isPro)}`;
 }

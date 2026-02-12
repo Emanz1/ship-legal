@@ -5,6 +5,7 @@ import JSZip from 'jszip';
 import { generatePrivacyPolicy } from '../templates/privacyPolicy';
 import { generateTermsOfService } from '../templates/termsOfService';
 import { generateCookiePolicy } from '../templates/cookiePolicy';
+import { CHECKOUT_URL, PRICE } from '../lib/pro';
 
 const TABS = [
   { id: 'privacy', label: 'Privacy Policy', filename: 'privacy-policy.md' },
@@ -12,15 +13,15 @@ const TABS = [
   { id: 'cookie', label: 'Cookie Policy', filename: 'cookie-policy.md' },
 ];
 
-export default function Results({ formData, onBack }) {
+export default function Results({ formData, onBack, isPro }) {
   const [activeTab, setActiveTab] = useState('privacy');
   const [copyState, setCopyState] = useState({});
 
   const documents = useMemo(() => ({
-    privacy: generatePrivacyPolicy(formData),
-    terms: generateTermsOfService(formData),
-    cookie: generateCookiePolicy(formData),
-  }), [formData]);
+    privacy: generatePrivacyPolicy(formData, isPro),
+    terms: generateTermsOfService(formData, isPro),
+    cookie: generateCookiePolicy(formData, isPro),
+  }), [formData, isPro]);
 
   const renderedHTML = useMemo(() => ({
     privacy: DOMPurify.sanitize(marked.parse(documents.privacy)),
@@ -80,7 +81,12 @@ export default function Results({ formData, onBack }) {
             </svg>
             Edit answers
           </button>
-          <span className="text-sm font-bold text-[#1e3a5f]">ShipLegal</span>
+          <div className="flex items-center gap-3">
+            {isPro && (
+              <span className="text-xs font-bold text-[#2563eb] bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200">PRO</span>
+            )}
+            <span className="text-sm font-bold text-[#1e3a5f]">ShipLegal</span>
+          </div>
         </div>
       </div>
 
@@ -95,6 +101,30 @@ export default function Results({ formData, onBack }) {
           </div>
         </div>
 
+        {/* Upgrade banner for free users */}
+        {!isPro && (
+          <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-4 mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <svg className="w-5 h-5 text-[#2563eb] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09z" />
+              </svg>
+              <div>
+                <p className="text-sm font-semibold text-[#1e3a5f]">Upgrade to Pro for ${PRICE}</p>
+                <p className="text-xs text-gray-500">Remove ShipLegal branding, get AI/LLM clauses, API terms, and zip downloads.</p>
+              </div>
+            </div>
+            <a
+              href={CHECKOUT_URL}
+              className="shrink-0 inline-flex items-center gap-1.5 bg-[#2563eb] text-white px-4 py-2 rounded-lg text-sm font-semibold hover:bg-[#1d4ed8] transition-colors"
+            >
+              Upgrade
+              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M13.5 4.5L21 12m0 0l-7.5 7.5M21 12H3" />
+              </svg>
+            </a>
+          </div>
+        )}
+
         {/* Title + Download */}
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
           <div>
@@ -103,15 +133,27 @@ export default function Results({ formData, onBack }) {
               Generated for <strong>{formData.productName}</strong> by {formData.companyName}
             </p>
           </div>
-          <button
-            onClick={downloadAll}
-            className="flex items-center gap-2 bg-[#1e3a5f] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#152d4a] transition-colors shadow-sm cursor-pointer"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
-            </svg>
-            Download All (.zip)
-          </button>
+          {isPro ? (
+            <button
+              onClick={downloadAll}
+              className="flex items-center gap-2 bg-[#1e3a5f] text-white px-5 py-2.5 rounded-lg text-sm font-semibold hover:bg-[#152d4a] transition-colors shadow-sm cursor-pointer"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+              </svg>
+              Download All (.zip)
+            </button>
+          ) : (
+            <a
+              href={CHECKOUT_URL}
+              className="flex items-center gap-2 bg-gray-100 text-gray-400 px-5 py-2.5 rounded-lg text-sm font-semibold border border-gray-200 hover:bg-gray-50 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 10.5V6.75a4.5 4.5 0 10-9 0v3.75m-.75 11.25h10.5a2.25 2.25 0 002.25-2.25v-6.75a2.25 2.25 0 00-2.25-2.25H6.75a2.25 2.25 0 00-2.25 2.25v6.75a2.25 2.25 0 002.25 2.25z" />
+              </svg>
+              Download All (Pro)
+            </a>
+          )}
         </div>
 
         {/* Tabs */}

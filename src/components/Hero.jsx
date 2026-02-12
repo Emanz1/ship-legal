@@ -1,3 +1,5 @@
+import { CHECKOUT_URL, PRICE } from '../lib/pro';
+
 export default function Hero({ onGetStarted }) {
   return (
     <div className="min-h-screen flex flex-col">
@@ -12,16 +14,24 @@ export default function Hero({ onGetStarted }) {
           </svg>
           <span className="text-xl font-bold text-[#1e3a5f]">ShipLegal</span>
         </div>
-        <button
-          onClick={onGetStarted}
-          className="text-sm font-medium text-[#2563eb] hover:text-[#1e3a5f] transition-colors cursor-pointer"
-        >
-          Get Started
-        </button>
+        <div className="flex items-center gap-4">
+          <a
+            href="#pricing"
+            className="text-sm font-medium text-gray-500 hover:text-[#1e3a5f] transition-colors hidden sm:block"
+          >
+            Pricing
+          </a>
+          <button
+            onClick={onGetStarted}
+            className="text-sm font-medium text-[#2563eb] hover:text-[#1e3a5f] transition-colors cursor-pointer"
+          >
+            Get Started
+          </button>
+        </div>
       </nav>
 
       {/* Hero Content */}
-      <div className="flex-1 flex items-center justify-center px-6">
+      <div className="flex-1 flex flex-col items-center justify-center px-6">
         <div className="max-w-3xl mx-auto text-center">
           <div className="inline-flex items-center gap-2 bg-blue-50 text-[#2563eb] text-sm font-medium px-4 py-1.5 rounded-full mb-6">
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
@@ -90,6 +100,63 @@ export default function Hero({ onGetStarted }) {
             />
           </div>
         </div>
+
+        {/* Pricing Section */}
+        <div id="pricing" className="w-full max-w-4xl mx-auto mt-24 mb-16 scroll-mt-8">
+          <h2 className="text-3xl font-bold text-center text-[#1e3a5f] mb-3">Simple Pricing</h2>
+          <p className="text-center text-gray-500 mb-10">Generate your legal pages for free. Upgrade for the full professional suite.</p>
+
+          <div className="grid sm:grid-cols-2 gap-6 max-w-3xl mx-auto">
+            {/* Free Tier */}
+            <div className="bg-white border border-gray-200 rounded-2xl p-6 sm:p-8">
+              <h3 className="text-lg font-bold text-[#1e3a5f]">Free</h3>
+              <div className="mt-2 mb-6">
+                <span className="text-4xl font-extrabold text-[#1e3a5f]">$0</span>
+                <span className="text-gray-400 text-sm ml-1">forever</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <PricingFeature text="Privacy Policy" included />
+                <PricingFeature text="Terms of Service" included />
+                <PricingFeature text="Cookie Policy" included />
+                <PricingFeature text="GDPR & CCPA sections" included />
+                <PricingFeature text="Markdown & HTML export" included />
+                <PricingFeature text="ShipLegal branding in docs" neutral />
+              </ul>
+              <button
+                onClick={onGetStarted}
+                className="w-full py-3 rounded-xl border-2 border-gray-200 text-sm font-semibold text-gray-700 hover:border-gray-300 hover:bg-gray-50 transition-colors cursor-pointer"
+              >
+                Get Started Free
+              </button>
+            </div>
+
+            {/* Pro Tier */}
+            <div className="bg-white border-2 border-[#2563eb] rounded-2xl p-6 sm:p-8 relative">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#2563eb] text-white text-xs font-bold px-3 py-1 rounded-full">
+                BEST VALUE
+              </div>
+              <h3 className="text-lg font-bold text-[#1e3a5f]">Pro</h3>
+              <div className="mt-2 mb-6">
+                <span className="text-4xl font-extrabold text-[#1e3a5f]">${PRICE}</span>
+                <span className="text-gray-400 text-sm ml-1">one-time</span>
+              </div>
+              <ul className="space-y-3 mb-8">
+                <PricingFeature text="Everything in Free" included />
+                <PricingFeature text="AI & LLM disclosure clauses" included pro />
+                <PricingFeature text="API Terms of Service" included pro />
+                <PricingFeature text="No ShipLegal branding" included pro />
+                <PricingFeature text="Zip download bundle" included pro />
+                <PricingFeature text="Future template updates" included pro />
+              </ul>
+              <a
+                href={CHECKOUT_URL}
+                className="block w-full py-3 rounded-xl bg-[#2563eb] text-white text-sm font-semibold text-center hover:bg-[#1d4ed8] transition-colors cursor-pointer"
+              >
+                Get Pro — ${PRICE}
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
 
       {/* Footer */}
@@ -107,5 +174,29 @@ function FeatureCard({ icon, title, description }) {
       <h3 className="font-semibold text-[#1e3a5f] mb-1">{title}</h3>
       <p className="text-sm text-gray-500 leading-relaxed">{description}</p>
     </div>
+  );
+}
+
+function PricingFeature({ text, included, pro, neutral }) {
+  return (
+    <li className="flex items-center gap-2.5 text-sm">
+      {neutral ? (
+        <svg className="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M5 12h14" />
+        </svg>
+      ) : included ? (
+        <svg className="w-4 h-4 text-[#059669] shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2.5" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+        </svg>
+      ) : (
+        <svg className="w-4 h-4 text-gray-300 shrink-0" fill="none" viewBox="0 0 24 24" strokeWidth="2" stroke="currentColor">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      )}
+      <span className={`${neutral ? 'text-gray-400' : 'text-gray-700'} ${pro ? 'font-medium' : ''}`}>
+        {text}
+        {pro && <span className="ml-1 text-[#2563eb] text-xs font-semibold">PRO</span>}
+      </span>
+    </li>
   );
 }

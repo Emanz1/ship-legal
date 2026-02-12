@@ -1,6 +1,6 @@
-import { formatDate, getAllSelectedServices, SERVICE_PRIVACY_LINKS, includesEU, includesUS, LEGAL_DISCLAIMER } from './helpers.js';
+import { formatDate, getAllSelectedServices, SERVICE_PRIVACY_LINKS, includesEU, includesUS, getDisclaimer } from './helpers.js';
 
-export function generatePrivacyPolicy(data) {
+export function generatePrivacyPolicy(data, isPro = false) {
   const sections = [];
   const date = formatDate(data.effectiveDate);
 
@@ -223,7 +223,7 @@ If you have any questions or concerns about this Privacy Policy or our data prac
 **${data.companyName}**
 Email: ${data.contactEmail}${data.contactAddress ? `\nAddress: ${data.contactAddress.replace(/\n/g, ', ')}` : ''}`);
 
-  sections.push(LEGAL_DISCLAIMER);
+  sections.push(getDisclaimer(isPro));
 
   return sections.join('\n\n');
 }
